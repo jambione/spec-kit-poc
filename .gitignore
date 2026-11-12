@@ -22,3 +22,6 @@ __pycache__/
 .DS_Store
 Thumbs.db
 .idea/
+
+# Spec Kit extension catalog cache
+.specify/extensions/.cache/
