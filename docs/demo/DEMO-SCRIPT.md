@@ -2,7 +2,7 @@
 
 **Length:** about 45 min live (or 20 min with pre-recorded build steps)
 **Audience:** engineering team and leads
-**Feature:** [Team Leave Requests](feature-brief.md), a .NET 8 Web API
+**Feature:** [Story Verification Recordings](feature-brief.md), a .NET 8 + Playwright tool
 
 > **Tip:** Do a full dry run the day before on a branch named `dry-run/*`. Keep that branch as a
 > **fallback**: if Copilot is slow or goes off track live, switch to it and walk through the
@@ -34,12 +34,12 @@ Show [`docs/ai-dlc/AI-DLC.md`](../ai-dlc/AI-DLC.md) section 2 (the phase diagram
 ## 2. Foundation: the constitution (4 min)
 
 Open `.specify/memory/constitution.md`.
-> "These are our engineering rules: .NET 8, test-first, security, logging. Copilot checks every
+> "These are our engineering rules: .NET 8, Playwright, test-first, security, logging. Copilot checks every
 > plan against them. We wrote them once, using `/speckit-constitution`."
 
 (Optional live amendment, if time allows:)
 ```
-/speckit-constitution Add a principle: all public API endpoints must be versioned under /api/v1.
+/speckit-constitution Add a principle: every verification file must declare a schemaVersion.
 ```
 
 ## 3. Inception: intent to spec (8 min)
@@ -48,7 +48,7 @@ Open `.specify/memory/constitution.md`.
 
 **Specify.** In Copilot Chat:
 ```
-/speckit-specify Build a Team Leave Requests capability. Employees submit leave requests (start date, end date, type: vacation/sick/other, optional reason), view their own requests and status (pending/approved/rejected/cancelled), and cancel requests that have not started. Managers view pending requests for their team and approve or reject them (comment required on reject). An employee cannot have two overlapping active requests. Out of scope: leave balances, holiday calendars, notifications, UI. Success: a manager processes a request in under 1 minute; no overlapping leave is approved.
+/speckit-specify Build Story Verification Recordings. When a developer finishes a user story or defect fix, they record in a browser what they expect to happen, marking the expected outcomes (text appears, value shown, page reached). The recording is saved as a readable JSON verification file linked to the story or defect ID and stored with the code change so it is reviewed in the same pull request. An automated runner replays the JSON file against a chosen environment that has the developer's code and checks every expected outcome. Each run reports pass/fail per step with evidence (expected vs found, screenshot on failure). The runner can be used in a pipeline so work is not done until its verification passes. Out of scope: mobile apps, API-only checks, performance testing, pixel comparison, a hosted dashboard. Success: record a typical story in under 5 minutes; a recorded file replays against a deployed environment with no manual edits; a reviewer understands what was verified from the JSON alone.
 ```
 Point out:
 - a new branch `001-…` and `specs/001-…/spec.md` were created
@@ -60,12 +60,13 @@ Point out:
 ```
 /speckit-clarify
 ```
-Let the PO in the room answer Copilot's questions (half days? past dates? self-approval? cancelling
-approved leave?). Show the answers written into the spec's **Clarifications** section.
+Let the PO in the room answer Copilot's questions (how does the runner sign in? where do
+credentials live? what about test data? which environments and browsers?). Show the answers
+written into the spec's **Clarifications** section.
 
 **G2: spec approval.** Commit and push, then open a **draft PR**:
 ```bash
-git add specs && git commit -m "spec(001): leave requests spec [G2]" && git push -u origin HEAD
+git add specs && git commit -m "spec(001): story verification recordings spec [G2]" && git push -u origin HEAD
 ```
 Show the PR template's gate checklist. The PO and TL approve, which completes G2.
 
@@ -73,12 +74,13 @@ Show the PR template's gate checklist. The PO and TL approve, which completes G2
 
 **Plan.** Now (and only now) we give technical direction:
 ```
-/speckit-plan .NET 8 ASP.NET Core Minimal API in src/LeaveRequests.Api, EF Core with SQLite, xUnit unit tests in tests/LeaveRequests.UnitTests and WebApplicationFactory integration tests in tests/LeaveRequests.IntegrationTests. Keep domain rules (overlap, state transitions) in a plain Domain folder. Fake authentication via a header (X-User-Id, X-User-Role) is acceptable for the POC.
+/speckit-plan .NET 8 solution using Microsoft.Playwright for .NET. Three projects: src/Verification.Core (the JSON verification file model, a versioned JSON Schema, validation, and the step/assertion execution engine), src/Verification.Cli (a dotnet tool with commands: record, run, validate), and tests (xUnit unit tests for Core, plus integration tests that run the CLI against a small local sample web app in tests/SampleApp). Research and decide how to capture recordings (for example building on Playwright's codegen/recorder versus a custom recorder) and record the decision in research.md. Prefer resilient locators (role, label, test id) over CSS/XPath. The base URL and credentials come from environment variables or a config file that is never committed; secrets must never be written into verification files. Output: console summary, JUnit XML for pipelines, screenshots and Playwright trace on failure, non-zero exit code on any failed step. Include a task to update CI to install Playwright browsers.
 ```
 Show:
 - `plan.md`, especially the **Constitution Check** table: "Copilot audited its own design against our rules."
-- `data-model.md` (the LeaveRequest entity and its state machine)
-- `contracts/` (the API contract) and `quickstart.md`
+- `research.md` (the recording approach decision)
+- `data-model.md` and `contracts/` (the **JSON verification file schema**: this is the contract)
+- `quickstart.md`
 
 **G3:** the TL approves the plan in the PR.
 
@@ -108,6 +110,10 @@ While it runs, narrate: tests are written first (Principle III), and tasks are t
 ```bash
 dotnet build && dotnet test
 ```
+**The payoff moment:** record a verification against the sample app, show the JSON file, then
+replay it. Break the sample app on purpose and replay again to show a failed step with its
+screenshot. (Use the exact commands from the generated `quickstart.md`.)
+
 If gaps remain:
 ```
 /speckit-converge
@@ -118,7 +124,9 @@ If gaps remain:
 ## 6. Traceability and wrap-up (5 min)
 
 - In the PR's commit history and review timeline, show the audit trail: G2 → G3 → G4 → G5.
-- Trace one line: **brief → FR-005 (no overlaps) → task T0xx → test `…Overlap…` → code**.
+- Trace one line: **brief → the "replay" requirement (FR-0xx) → task T0xx → its test → code**.
+- Close the loop: "This tool becomes the last step of our own lifecycle. Every future story ends
+  with a verification file, and gate G6 replays it against the environment."
 - Show the metrics captured during the dry run ([POC-PLAN.md](../poc/POC-PLAN.md#success-criteria--metrics)).
 - Close with the recommendation and next steps.
 

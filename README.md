@@ -4,6 +4,11 @@ A proof of concept showing how a team can run an **AI-driven development lifecyc
 **GitHub Copilot** (agent mode) and **[GitHub Spec Kit](https://github.com/github/spec-kit)** on
 a **.NET 8** codebase.
 
+**The project being built:** *Story Verification Recordings*. When a developer finishes a user
+story or defect, they record what they expect to happen. The recording is saved as a JSON
+verification file, and a Playwright runner replays it against the environment that has their
+code. See the [brief](docs/demo/feature-brief.md).
+
 > **AI drafts, humans decide.** Copilot writes the spec, plan, tasks and code; named people
 > approve each step at a gate; Git records the whole trail.
 
@@ -14,7 +19,7 @@ a **.NET 8** codebase.
 | Understand the lifecycle (phases, gates, roles) | [`docs/ai-dlc/AI-DLC.md`](docs/ai-dlc/AI-DLC.md) |
 | See the POC plan, timeline and success metrics | [`docs/poc/POC-PLAN.md`](docs/poc/POC-PLAN.md) |
 | Run the demo | [`docs/demo/DEMO-SCRIPT.md`](docs/demo/DEMO-SCRIPT.md) |
-| See the sample feature (input to the demo) | [`docs/demo/feature-brief.md`](docs/demo/feature-brief.md) |
+| See the POC project brief (Story Verification Recordings) | [`docs/demo/feature-brief.md`](docs/demo/feature-brief.md) |
 | See the engineering rules Copilot must follow | [`.specify/memory/constitution.md`](.specify/memory/constitution.md) |
 
 ## The flow
@@ -84,3 +89,4 @@ src/  tests/                   # created during /speckit-implement
 | specify-cli (Spec Kit) | 1.4.0 (`--integration copilot --script py`) |
 | Spec Kit git extension | 1.0.4 |
 | .NET | 8.0 LTS |
+| Playwright | `Microsoft.Playwright` for .NET (version chosen in the plan) |

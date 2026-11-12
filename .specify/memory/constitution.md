@@ -1,7 +1,8 @@
 <!--
 Sync Impact Report
-- Version: 0.0.0 → 1.0.0 (initial ratification for the AI-DLC + Spec Kit POC)
-- Principles added: I–VII
+- Version: 1.0.0 → 1.1.0 (retargeted from a Web API sample to the Story Verification
+  Recordings tool: CLI + Playwright standards; added principle VIII)
+- Principles added: VIII. Modified: III, IV, V, VI
 - Sections added: Technology Standards, AI-DLC Workflow & Quality Gates, Governance
 - Templates reviewed: plan-template.md (Constitution Check reads these principles) ✅
 - Follow-up TODOs: replace POC defaults with real team standards before wider rollout
@@ -29,45 +30,57 @@ Any unresolved `[NEEDS CLARIFICATION]` marker blocks its gate.
 ### III. Test-First
 Tests are written from the spec's acceptance scenarios before the implementation, and must fail
 first (red, then green, then refactor). Every functional requirement (FR-xxx) is covered by at
-least one automated test. Business logic needs unit tests; every HTTP endpoint needs an
-integration test using `WebApplicationFactory`.
+least one automated test. Core logic (file model, validation, step execution) needs unit tests;
+every CLI command needs an integration test that runs it against the local sample app.
+Tests never depend on an external or shared environment.
 
 ### IV. Simple, Layered .NET Design
-- Start with the simplest structure that works (YAGNI). Use one Web API project plus test
+- Start with the simplest structure that works (YAGNI). Use a core library, a CLI and test
   projects unless the plan justifies more in its Complexity Tracking section.
-- Keep domain rules (validation, state transitions) out of controllers and endpoints, in plain
-  classes that can be tested on their own.
+- Keep core rules (file validation, step and assertion execution) out of the CLI layer, in
+  plain classes that can be tested on their own.
 - Use dependency injection through the built-in container. No service locators and no static
   mutable state.
-- Don't add a pattern or library (MediatR, AutoMapper, generic repositories and so on) unless
-  the plan explains why it's needed.
+- Don't add a pattern or library unless the plan explains why it's needed.
 
 ### V. Secure by Default
-- Validate all input at the API boundary and return RFC 7807 `ProblemDetails` for errors.
-- Keep secrets out of source control, prompts and spec files. Use User Secrets locally and the
-  platform secret store elsewhere.
-- Endpoints require authorization unless the spec explicitly says otherwise.
-- Never log personal data (names, emails, free-text reasons).
+- Verification files are untrusted input: validate them against the schema before running, and
+  fail with a clear message naming the file and the problem.
+- Credentials, tokens and passwords never appear in verification files, logs, screenshot
+  metadata, specs or prompts. They come from environment variables or the pipeline secret store,
+  and typed secrets are masked at record time.
+- The runner only navigates to the configured environment's allowed hosts.
+- Never record or log real personal data; use synthetic test data.
 
 ### VI. Observable
 Use structured logging through `ILogger<T>` with message templates (no string interpolation).
-Each request is traceable by correlation ID. Expose a health check at `/health`.
+Every run reports pass/fail per step, and on failure keeps evidence: expected vs found, a
+screenshot and a Playwright trace. Exit code is 0 only when every step passes, and results are
+also written in a format pipelines can read (JUnit XML).
 
 ### VII. Traceable
-Commits and PRs reference the feature folder (for example `specs/001-leave-requests`). Task IDs
+Commits and PRs reference the feature folder (for example `specs/001-story-verification`). Task IDs
 (T001…) appear in commit messages where practical. Git history plus PR approvals form the audit
 trail, so don't squash away gate approvals.
+
+### VIII. Verification Files Are a Contract
+The JSON verification file is a public, versioned format. It has a published JSON Schema and a
+`schemaVersion` field, links to its story or defect ID, and stays readable by a person in a pull
+request. Steps use resilient locators (role, label, test ID) before CSS or XPath. A file holds no
+environment-specific values: base URL and credentials are supplied at run time. Breaking changes
+to the format need a new schema version and a migration note.
 
 ## Technology Standards
 
 | Area | Standard |
 |---|---|
 | Runtime | .NET 8 LTS (move to the current LTS when the team does), C# with nullable reference types enabled |
-| API | ASP.NET Core Minimal APIs or Controllers (the plan decides), OpenAPI via `Microsoft.AspNetCore.OpenApi` |
-| Data | EF Core. Use SQLite or InMemory for the POC; the production provider is decided in the plan |
-| Tests | xUnit, FluentAssertions (or plain asserts), `Microsoft.AspNetCore.Mvc.Testing` |
+| Browser automation | `Microsoft.Playwright` for .NET; Chromium by default, other browsers as the spec requires |
+| CLI | A `dotnet tool` using `System.CommandLine` (the plan may justify another parser) |
+| File format | JSON via `System.Text.Json`; JSON Schema kept in the repo under `schemas/` |
+| Tests | xUnit, FluentAssertions (or plain asserts); a small local sample web app under `tests/SampleApp` as the replay target |
 | Style | `dotnet format` clean; warnings treated as errors in `Release` |
-| Layout | `src/<Project>/`, `tests/<Project>.UnitTests/`, `tests/<Project>.IntegrationTests/`, one `.sln` at the repo root |
+| Layout | `src/<Project>/`, `tests/<Project>.UnitTests/`, `tests/<Project>.IntegrationTests/`, `verifications/` for verification files, one `.sln` at the repo root |
 
 ## AI-DLC Workflow & Quality Gates
 
@@ -90,4 +103,4 @@ trail, so don't squash away gate approvals.
 - Reviewers check compliance using the PR template checklist.
 - Runtime guidance for Copilot lives in `.github/copilot-instructions.md`.
 
-**Version**: 1.0.0 | **Ratified**: 2026-11-12 | **Last Amended**: 2026-11-12
+**Version**: 1.1.0 | **Ratified**: 2026-11-12 | **Last Amended**: 2026-11-12

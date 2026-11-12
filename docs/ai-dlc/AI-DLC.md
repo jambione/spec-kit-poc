@@ -58,13 +58,26 @@ Each gate is a **pull request** (or a PR review checkpoint) on the feature branc
 The **PR template** (`.github/pull_request_template.md`) has a checkbox per gate, and the
 **`ai-dlc-gates` CI workflow** blocks merges where code changes have no spec, plan and tasks.
 
+### The developer's last step: a verification recording
+
+The POC project ([feature brief](../demo/feature-brief.md)) builds the tool that closes this
+lifecycle. Once it exists, the gates change like this:
+
+| Gate | Today | With Story Verification Recordings |
+|---|---|---|
+| **G5 Code** | Reviewer reads code and tests | The PR also contains a JSON verification file, recorded by the developer, showing what they expect to happen. The reviewer reads it alongside the code. |
+| **G6 Release** | Pipeline green, manual sign-off | The pipeline replays the verification file with Playwright against the environment that has the change. A failed step blocks the release. |
+
+This applies to both user stories and defects: a defect's verification file is its regression
+proof.
+
 ## 5. Paths by change size
 
 | Change type | Path |
 |---|---|
 | New feature / significant change | Full lifecycle (G1–G6) |
 | Small enhancement (< 1 day) | Specify → Plan → Tasks in one PR, a single combined G2–G4 review |
-| Bug fix | Issue → fix + regression test → G5 (no spec needed; link the issue) |
+| Bug fix | Issue → fix + regression test (+ verification file, once the tool exists) → G5 (no spec needed; link the issue) |
 | Spike / research | No gates. Results go into `research.md` of the related feature |
 
 ## 6. Working agreements for AI use
