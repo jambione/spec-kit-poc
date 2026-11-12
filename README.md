@@ -21,6 +21,7 @@ code. See the [brief](docs/demo/feature-brief.md).
 | See the POC plan, timeline and success metrics | [`docs/poc/POC-PLAN.md`](docs/poc/POC-PLAN.md) |
 | **Present AI-DLC + Spec Kit to the team** (agenda, speaker script, Q&A) | [`docs/presentation/TEAM-SESSION.md`](docs/presentation/TEAM-SESSION.md) + slides: [`AI-DLC-Spec-Kit-Team-Session.pptx`](docs/presentation/AI-DLC-Spec-Kit-Team-Session.pptx) |
 | Run the demo | [`docs/demo/DEMO-SCRIPT.md`](docs/demo/DEMO-SCRIPT.md) |
+| See what good spec / plan / tasks look like (reference to compare Copilot output against) | [`docs/reference-example/`](docs/reference-example/README.md) |
 | See the POC project brief (Story Verification Recordings) | [`docs/demo/feature-brief.md`](docs/demo/feature-brief.md) |
 | See the engineering rules Copilot must follow | [`.specify/memory/constitution.md`](.specify/memory/constitution.md) |
 
@@ -70,6 +71,7 @@ docs/
   poc/POC-PLAN.md              # plan, metrics, risks
   poc/PROJECT-CONTEXT.md       # YOUR app, environment, JSON format (fill in first)
   demo/                        # demo script + sample feature brief
+  reference-example/            # hand-written spec, plan, research, contracts, tasks for the POC
   presentation/TEAM-SESSION.md # team presentation: agenda + speaker script
   presentation/*.pptx          # slide deck for the team session (with speaker notes)
 scripts/check-gates.sh         # CI: src/ changes require spec + plan + tasks

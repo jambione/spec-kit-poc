@@ -1,0 +1,29 @@
+{
+  "$schema": "./verification-file.schema.json",
+  "schemaVersion": "1.0",
+  "id": "proj-123-apply-discount-code",
+  "title": "A valid discount code reduces the order total",
+  "description": "Defect fix check: the total was not updated after applying a code.",
+  "workItem": {
+    "id": "PROJ-123",
+    "type": "defect",
+    "title": "Order total doesn't update after applying a discount code"
+  },
+  "author": "jdoe",
+  "recordedAt": "2026-11-12T14:05:00Z",
+  "variables": ["DISCOUNT_CODE"],
+  "secrets": ["PASSWORD"],
+  "steps": [
+    { "action": "navigate", "path": "/login" },
+    { "action": "fill", "target": { "label": "Email" }, "value": "qa.shopper@example.com" },
+    { "action": "fill", "target": { "label": "Password" }, "value": "{{secret:PASSWORD}}" },
+    { "action": "click", "target": { "role": "button", "name": "Sign in" } },
+    { "action": "expectPath", "path": "/account", "match": "startsWith" },
+    { "action": "navigate", "path": "/cart" },
+    { "action": "expectText", "target": { "testId": "order-total" }, "text": "$100.00" },
+    { "action": "fill", "target": { "role": "textbox", "name": "Discount code" }, "value": "{{var:DISCOUNT_CODE}}" },
+    { "action": "click", "target": { "role": "button", "name": "Apply" } },
+    { "action": "expectVisible", "target": { "text": "Discount applied" } },
+    { "action": "expectText", "target": { "testId": "order-total" }, "text": "$90.00", "note": "This is the defect: the total used to stay at $100.00" }
+  ]
+}

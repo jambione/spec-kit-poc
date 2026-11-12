@@ -1,0 +1,133 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/schemas/verification-file.v1.schema.json",
+  "title": "Story Verification File",
+  "description": "One scenario a developer expects to work for a user story or defect. Replayed by storyverify against an environment.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "id", "title", "workItem", "author", "recordedAt", "steps"],
+  "properties": {
+    "$schema": { "type": "string" },
+    "schemaVersion": { "const": "1.0" },
+    "id": { "type": "string", "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$", "maxLength": 100 },
+    "title": { "type": "string", "minLength": 5, "maxLength": 120 },
+    "description": { "type": "string", "maxLength": 2000 },
+    "workItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "type", "title"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1, "description": "Checked against workItemPattern in storyverify.json" },
+        "type": { "enum": ["story", "defect"] },
+        "title": { "type": "string", "minLength": 1 }
+      }
+    },
+    "author": { "type": "string", "minLength": 1 },
+    "recordedAt": { "type": "string", "format": "date-time" },
+    "variables": { "$ref": "#/$defs/nameList" },
+    "secrets": { "$ref": "#/$defs/nameList" },
+    "steps": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 200,
+      "items": { "$ref": "#/$defs/step" },
+      "contains": {
+        "type": "object",
+        "properties": { "action": { "enum": ["expectText", "expectValue", "expectChecked", "expectVisible", "expectHidden", "expectPath"] } },
+        "required": ["action"]
+      }
+    }
+  },
+  "$defs": {
+    "nameList": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "type": "string", "pattern": "^[A-Z][A-Z0-9_]*$" }
+    },
+    "path": { "type": "string", "pattern": "^/", "not": { "pattern": "://" } },
+    "text": { "type": "string", "not": { "pattern": "://" } },
+    "target": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "role": { "type": "string" },
+        "name": { "type": "string" },
+        "exact": { "type": "boolean" },
+        "label": { "type": "string" },
+        "testId": { "type": "string" },
+        "placeholder": { "type": "string" },
+        "text": { "type": "string" },
+        "altText": { "type": "string" },
+        "title": { "type": "string" },
+        "css": { "type": "string" },
+        "nth": { "type": "integer", "minimum": -1 }
+      },
+      "oneOf": [
+        { "required": ["role"], "not": { "anyOf": [{ "required": ["label"] }, { "required": ["testId"] }, { "required": ["placeholder"] }, { "required": ["text"] }, { "required": ["altText"] }, { "required": ["title"] }, { "required": ["css"] }] } },
+        { "required": ["label"], "properties": { "name": false, "exact": false } , "not": { "anyOf": [{ "required": ["role"] }, { "required": ["testId"] }, { "required": ["placeholder"] }, { "required": ["text"] }, { "required": ["altText"] }, { "required": ["title"] }, { "required": ["css"] }] } },
+        { "required": ["testId"], "properties": { "name": false, "exact": false }, "not": { "anyOf": [{ "required": ["role"] }, { "required": ["label"] }, { "required": ["placeholder"] }, { "required": ["text"] }, { "required": ["altText"] }, { "required": ["title"] }, { "required": ["css"] }] } },
+        { "required": ["placeholder"], "properties": { "name": false, "exact": false }, "not": { "anyOf": [{ "required": ["role"] }, { "required": ["label"] }, { "required": ["testId"] }, { "required": ["text"] }, { "required": ["altText"] }, { "required": ["title"] }, { "required": ["css"] }] } },
+        { "required": ["text"], "properties": { "name": false, "exact": false }, "not": { "anyOf": [{ "required": ["role"] }, { "required": ["label"] }, { "required": ["testId"] }, { "required": ["placeholder"] }, { "required": ["altText"] }, { "required": ["title"] }, { "required": ["css"] }] } },
+        { "required": ["altText"], "properties": { "name": false, "exact": false }, "not": { "anyOf": [{ "required": ["role"] }, { "required": ["label"] }, { "required": ["testId"] }, { "required": ["placeholder"] }, { "required": ["text"] }, { "required": ["title"] }, { "required": ["css"] }] } },
+        { "required": ["title"], "properties": { "name": false, "exact": false }, "not": { "anyOf": [{ "required": ["role"] }, { "required": ["label"] }, { "required": ["testId"] }, { "required": ["placeholder"] }, { "required": ["text"] }, { "required": ["altText"] }, { "required": ["css"] }] } },
+        { "required": ["css"], "properties": { "name": false, "exact": false }, "not": { "anyOf": [{ "required": ["role"] }, { "required": ["label"] }, { "required": ["testId"] }, { "required": ["placeholder"] }, { "required": ["text"] }, { "required": ["altText"] }, { "required": ["title"] }] } }
+      ]
+    },
+    "common": {
+      "note": { "type": "string", "maxLength": 500 },
+      "timeoutMs": { "type": "integer", "minimum": 100, "maximum": 120000 }
+    },
+    "step": {
+      "type": "object",
+      "required": ["action"],
+      "properties": { "action": { "type": "string" } },
+      "oneOf": [
+        { "$ref": "#/$defs/navigate" },
+        { "$ref": "#/$defs/targetOnly" },
+        { "$ref": "#/$defs/fill" },
+        { "$ref": "#/$defs/press" },
+        { "$ref": "#/$defs/select" },
+        { "$ref": "#/$defs/expectText" },
+        { "$ref": "#/$defs/expectValue" },
+        { "$ref": "#/$defs/expectChecked" },
+        { "$ref": "#/$defs/expectPath" }
+      ]
+    },
+    "navigate": {
+      "type": "object", "additionalProperties": false, "required": ["action", "path"],
+      "properties": { "action": { "const": "navigate" }, "path": { "$ref": "#/$defs/path" }, "note": { "$ref": "#/$defs/common/note" }, "timeoutMs": { "$ref": "#/$defs/common/timeoutMs" } }
+    },
+    "targetOnly": {
+      "type": "object", "additionalProperties": false, "required": ["action", "target"],
+      "properties": { "action": { "enum": ["click", "dblclick", "check", "uncheck", "expectVisible", "expectHidden"] }, "target": { "$ref": "#/$defs/target" }, "note": { "$ref": "#/$defs/common/note" }, "timeoutMs": { "$ref": "#/$defs/common/timeoutMs" } }
+    },
+    "fill": {
+      "type": "object", "additionalProperties": false, "required": ["action", "target", "value"],
+      "properties": { "action": { "const": "fill" }, "target": { "$ref": "#/$defs/target" }, "value": { "$ref": "#/$defs/text" }, "note": { "$ref": "#/$defs/common/note" }, "timeoutMs": { "$ref": "#/$defs/common/timeoutMs" } }
+    },
+    "press": {
+      "type": "object", "additionalProperties": false, "required": ["action", "target", "key"],
+      "properties": { "action": { "const": "press" }, "target": { "$ref": "#/$defs/target" }, "key": { "type": "string", "minLength": 1 }, "note": { "$ref": "#/$defs/common/note" }, "timeoutMs": { "$ref": "#/$defs/common/timeoutMs" } }
+    },
+    "select": {
+      "type": "object", "additionalProperties": false, "required": ["action", "target", "options"],
+      "properties": { "action": { "const": "select" }, "target": { "$ref": "#/$defs/target" }, "options": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/text" } }, "note": { "$ref": "#/$defs/common/note" }, "timeoutMs": { "$ref": "#/$defs/common/timeoutMs" } }
+    },
+    "expectText": {
+      "type": "object", "additionalProperties": false, "required": ["action", "target", "text"],
+      "properties": { "action": { "const": "expectText" }, "target": { "$ref": "#/$defs/target" }, "text": { "$ref": "#/$defs/text" }, "match": { "enum": ["exact", "contains"], "default": "exact" }, "note": { "$ref": "#/$defs/common/note" }, "timeoutMs": { "$ref": "#/$defs/common/timeoutMs" } }
+    },
+    "expectValue": {
+      "type": "object", "additionalProperties": false, "required": ["action", "target", "value"],
+      "properties": { "action": { "const": "expectValue" }, "target": { "$ref": "#/$defs/target" }, "value": { "$ref": "#/$defs/text" }, "note": { "$ref": "#/$defs/common/note" }, "timeoutMs": { "$ref": "#/$defs/common/timeoutMs" } }
+    },
+    "expectChecked": {
+      "type": "object", "additionalProperties": false, "required": ["action", "target", "checked"],
+      "properties": { "action": { "const": "expectChecked" }, "target": { "$ref": "#/$defs/target" }, "checked": { "type": "boolean" }, "note": { "$ref": "#/$defs/common/note" }, "timeoutMs": { "$ref": "#/$defs/common/timeoutMs" } }
+    },
+    "expectPath": {
+      "type": "object", "additionalProperties": false, "required": ["action", "path"],
+      "properties": { "action": { "const": "expectPath" }, "path": { "$ref": "#/$defs/path" }, "match": { "enum": ["exact", "startsWith"], "default": "exact" }, "note": { "$ref": "#/$defs/common/note" }, "timeoutMs": { "$ref": "#/$defs/common/timeoutMs" } }
+    }
+  }
+}

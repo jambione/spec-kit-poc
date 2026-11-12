@@ -4,6 +4,10 @@
 **Audience:** engineering team and leads
 **Feature:** [Story Verification Recordings](feature-brief.md), a .NET 8 + Playwright tool
 
+> **Reference:** [`docs/reference-example/`](../reference-example/README.md) shows what good
+> output looks like for each step. Use it to judge Copilot's output at each gate, or walk
+> through it if the live run goes wrong.
+
 > **Tip:** Do a full dry run the day before on a branch named `dry-run/*`. Keep that branch as a
 > **fallback**: if Copilot is slow or goes off track live, switch to it and walk through the
 > artifacts that are already there.
