@@ -12,6 +12,31 @@ code. See the [brief](docs/demo/feature-brief.md).
 > **AI drafts, humans decide.** Copilot writes the spec, plan, tasks and code; named people
 > approve each step at a gate; Git records the whole trail.
 
+## POC summary
+
+**Goal:** show that an AI-Driven Development Lifecycle, run with Spec Kit and Copilot, produces
+better-specified, tested and traceable .NET work, with people approving at fixed gates (G1–G6).
+The tool being built closes that loop: a story's verification recording is reviewed at G5 and
+replayed against the environment before release (G6).
+
+**What's in this repo**
+- **Spec Kit 1.4.0** set up for Copilot, with automatic feature branches. Other AI agents are optional ([AI agents](#ai-agents)).
+- **Lifecycle and rules:** [`AI-DLC.md`](docs/ai-dlc/AI-DLC.md) (phases, gates, roles) and a [constitution](.specify/memory/constitution.md) with .NET and Playwright standards.
+- **Project context:** [`PROJECT-CONTEXT.md`](docs/poc/PROJECT-CONTEXT.md) for your real repository, environment and JSON format, left for the team to fill in, with a readiness check (G1).
+- **Reference example:** a complete hand-written [spec, plan, research, JSON schema and 51 tasks](docs/reference-example/README.md), showing what good output looks like.
+- **Review, Attack & Fix extension:** a [review loop](extensions/review/README.md) after implementation. Copilot must prove each defect with a failing test, the developer makes the rulings, a fixer works through the findings, and CI blocks the PR while serious findings are open.
+- **Enforcement:** a PR template with a checkbox per gate, and CI that checks the spec trail, the review findings and the .NET build.
+- **Presentation kit:** a 25-slide [deck](docs/presentation/AI-DLC-Spec-Kit-Team-Session.pptx) with speaker notes, a [session script](docs/presentation/TEAM-SESSION.md), a [demo script](docs/demo/DEMO-SCRIPT.md) and a 3-week [POC plan](docs/poc/POC-PLAN.md) with metrics.
+
+**Status:** not yet run in VS Code with Copilot, and no feature code exists yet.
+
+**Next steps**
+1. Fill in [`PROJECT-CONTEXT.md`](docs/poc/PROJECT-CONTEXT.md), then run `bash scripts/check-context.sh`.
+2. Do a Copilot dry run on a `dry-run/*` branch and compare its output with the [reference example](docs/reference-example/README.md).
+3. Set `.specify/extensions/review/review-config.yml` for your stack.
+4. Turn on branch protection for `main` ([how gates are enforced](#how-gates-are-enforced)).
+5. Present to the team.
+
 ## Start here
 
 | If you want to… | Read |
