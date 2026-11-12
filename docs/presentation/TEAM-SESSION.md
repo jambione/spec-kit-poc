@@ -9,7 +9,7 @@
 | Audience | Developers, QA, Product Owner, Tech Lead |
 | Format | Talk + live demo in VS Code with GitHub Copilot |
 | Goal | The team understands the lifecycle, has seen it work on our project, and agrees to run the POC |
-| Slides | [`AI-DLC-Spec-Kit-Team-Session.pptx`](AI-DLC-Spec-Kit-Team-Session.pptx): 23 slides with speaker notes, following this script |
+| Slides | [`AI-DLC-Spec-Kit-Team-Session.pptx`](AI-DLC-Spec-Kit-Team-Session.pptx): 25 slides with speaker notes, following this script |
 
 ---
 
@@ -185,6 +185,14 @@ commands):
 > and refuse to plan without a spec, and the chain from spec to plan to tasks to code, checked
 > against our rules. The CLI is only the installer; the value is what it installs."
 
+**Show:** the "Closing the quality gap" and "A finding, proven" slides.
+> "Spec Kit checks documents carefully before code, but after `/speckit-implement` there's
+> nothing automated. So we added a Review, Attack & Fix extension. A critic reviews the diff and
+> has to prove every defect with a failing test. For critical code, an adversary tries to break
+> it. Anything ambiguous comes to us to decide. A fixer writes the regression test first, then
+> the fix. CI won't merge while a serious finding is open, and after two rounds it escalates to a
+> person instead of looping."
+
 **Transition:** "So how do these two fit together for us?"
 
 ---
@@ -302,6 +310,7 @@ Use section 6 below. Close with:
 | "Is our code safe?" | It uses Copilot under our existing GitHub agreement. Spec Kit is files in the repo plus a local CLI; it doesn't send anything anywhere itself. Credentials never go in specs, prompts or verification files (constitution V). |
 | "What is AI-DLC officially?" | The term was popularised by an AWS methodology, but it doesn't need AWS. We use the general idea: AI drafts, humans approve at gates. Our version is in `AI-DLC.md` and we can change it. |
 | "Why not just write a spec.md ourselves?" | You can, but you'd be rebuilding what Spec Kit installs: the template, the step-by-step command prompts, the scripts and checks, and the chain from spec to plan to tasks to code. The `specify` CLI is only the installer; the value is in those files. |
+| "Doesn't AI review its own code badly?" | That's why the critic runs in a **new chat**, without the builder's reasoning, and has to **prove** each defect with a failing test. No test, no finding. And a person still makes the rulings and does the final PR review. |
 | "Why Spec Kit and not just prompting Copilot?" | Repeatability. Same steps, same templates, same output files every time, for every developer, and an audit trail in Git. |
 | "Why record with Playwright instead of writing tests?" | Recording is faster for the developer and captures what *they* expected. The JSON is readable in the PR, and the runner turns it into a repeatable check against the real environment. |
 | "What happens to the verification files after release?" | That's an open question for the POC (in the feature brief). Options: they join a regression set, or get archived. |
