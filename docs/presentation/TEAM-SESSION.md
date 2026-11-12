@@ -57,7 +57,8 @@
 
 **The day before**
 - [ ] `docs/poc/PROJECT-CONTEXT.md` filled in; `bash scripts/check-context.sh` passes.
-- [ ] Full dry run of [DEMO-SCRIPT.md](../demo/DEMO-SCRIPT.md) steps 3–5 on a `dry-run/…` branch.
+- [ ] Full dry run of [DEMO-SCRIPT.md](../demo/DEMO-SCRIPT.md) steps 3–6 on a `dry-run/…` branch,
+      including one review round for US1 (review → rule → fix, committed in two commits: before and after the fix).
       **Keep that branch.** It's your fallback if Copilot is slow live.
 - [ ] Optional: screen-record the `/speckit-implement` step from the dry run (it can take several
       minutes).
@@ -238,12 +239,13 @@ Point at each:
 
 | Minutes | Demo step | What to say while it runs |
 |---|---|---|
-| 0:30–0:33 | Show the brief and the context file; run `bash scripts/check-context.sh` | "This is G1: intent plus our specifics." |
-| 0:33–0:38 | `/speckit-specify` (paste the prompt) | "Watch for `[NEEDS CLARIFICATION]`: it's flagging what we didn't say." |
-| 0:38–0:42 | `/speckit-clarify`; let the PO answer 2–3 questions live | "This conversation normally happens in QA, three weeks later." |
-| 0:42–0:46 | `/speckit-plan` (paste the prompt); open `plan.md` → Constitution Check, `research.md`, `contracts/` | "The JSON schema is a contract we review *before* any code exists." |
-| 0:46–0:48 | `/speckit-tasks`; scroll `tasks.md` | "Tests first, file paths, `[P]` means it can run in parallel." |
-| 0:48–0:50 | **Switch to the dry-run branch** for implement: show the code, `dotnet test`, a JSON verification file, a replay | "I ran implement earlier because it takes a few minutes. Here's the result." |
+| 0:30–0:32 | Show the brief and the context file; run `bash scripts/check-context.sh` | "This is G1: intent plus our specifics." |
+| 0:32–0:36 | `/speckit-specify` (paste the prompt) | "Watch for `[NEEDS CLARIFICATION]`: it's flagging what we didn't say." |
+| 0:36–0:39 | `/speckit-clarify`; let the PO answer 2–3 questions live | "This conversation normally happens in QA, three weeks later." |
+| 0:39–0:42 | `/speckit-plan` (paste the prompt); open `plan.md` → Constitution Check, `research.md`, `contracts/` | "The JSON schema is a contract we review *before* any code exists." |
+| 0:42–0:43 | `/speckit-tasks`; scroll `tasks.md` | "Tests first, file paths, `[P]` means it can run in parallel." |
+| 0:43–0:45 | **Switch to the dry-run branch** for implement: show the code and `dotnet test` | "I ran implement earlier because it takes a few minutes. Here's the result." |
+| 0:45–0:50 | Review loop (DEMO-SCRIPT step 6): show `findings.md` and the red tests from the dry run; run `check-gates.sh` (fails); run `/speckit-review-rule US1` live and **let the PO/TL decide**; show the fixed round and `check-gates.sh` passing | "AI proposes, we decide. No failing test, no finding, and no merge while a serious one is open." |
 
 **If something goes wrong:** say "this is exactly why there are gates," and switch to the dry-run
 branch. Walk through the files already generated there. Don't debug live.

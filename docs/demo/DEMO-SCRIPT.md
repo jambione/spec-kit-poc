@@ -1,6 +1,6 @@
 # Demo Script: AI-DLC with Spec Kit + GitHub Copilot
 
-**Length:** about 45 min live (or 20 min with pre-recorded build steps)
+**Length:** about 55 min live (or 25 min with the build and review steps shown from the dry run)
 **Audience:** engineering team and leads
 **Feature:** [Story Verification Recordings](feature-brief.md), a .NET 8 + Playwright tool
 
@@ -8,9 +8,9 @@
 > output looks like for each step. Use it to judge Copilot's output at each gate, or walk
 > through it if the live run goes wrong.
 
-> **Tip:** Do a full dry run the day before on a branch named `dry-run/*`. Keep that branch as a
-> **fallback**: if Copilot is slow or goes off track live, switch to it and walk through the
-> artifacts that are already there.
+> **Tip:** Do a full dry run the day before on a branch named `dry-run/*`, **including one review
+> round for US1** (step 6). Keep that branch as a **fallback**: if Copilot is slow or goes off
+> track live, switch to it and walk through the artifacts that are already there.
 
 ---
 
@@ -23,6 +23,8 @@
 | Python 3.11+ (runs the Spec Kit helper scripts) | `python --version` |
 | Spec Kit CLI (optional; the repo is already initialized) | `uv tool install specify-cli` → `specify --version` (POC pinned at 1.4.0) |
 | Git + push access to this repo | `git push` works |
+| Review, Attack & Fix extension (already installed in this repo) | Typing `/speckit-review` in Copilot Chat lists 6 commands |
+| Review gate commands set for your stack | `.specify/extensions/review/review-config.yml` → `gate.command` and `gate.targeted` run on your machine |
 
 Open the repo in VS Code and open **Copilot Chat → Agent mode**. Typing `/speckit` should list
 the Spec Kit skills (they come from `.github/skills/`).
@@ -130,20 +132,79 @@ If gaps remain:
 /speckit-converge
 ```
 
-**Review loop (optional, 3 min, or show it from the dry-run branch).** In a **new chat**:
+Don't push yet: the code goes through the review loop first.
+
+## 6. Review, Attack & Fix (8 min, or show it from the dry-run branch)
+
+Spec Kit stops at implement. This is the step our extension adds. See
+[`extensions/review/README.md`](../../extensions/review/README.md) for the full loop.
+
+**Hook.** At the end of `/speckit-implement`, Spec Kit asks *"Run the critic review on what was
+just implemented?"*
+> "Spec Kit is offering our quality step automatically. We'll run it, but in a fresh chat."
+
+**Critic.** Open a **new Copilot chat** (agent mode), choose your **strongest reasoning model**
+in the model picker, and run:
 ```
 /speckit-review-code US1
 ```
-Show `specs/001-…/review/US1/round-1/findings.md`: numbered findings, each proven by a failing
-test. Then run `/speckit-review-fix US1` and show the statuses change to FIXED.
-> "Copilot wrote the code. A second Copilot chat, told to find defects, had to prove each one with
-> a failing test. CI won't let this PR merge while a serious finding is open."
+While it runs:
+> "This chat didn't write the code, so it has no stake in it. It has to prove every defect with
+> a failing test. No test, no finding."
 
-**G5:** push and show CI (`ai-dlc-gates` + `dotnet-build-test`) going green; a reviewer approves.
+Show:
+- `specs/001-…/review/US1/round-1/findings.md`: numbered findings with severity, file:line, scenario and required fix
+- the new test file it created (`tests/US1_review_r1_Tests.cs`), with `dotnet test` showing those tests **red**
 
-## 6. Traceability and wrap-up (5 min)
+**Adversary (optional, if time allows).** US1 touches secrets and parses files, so it counts as
+critical. In a **second new chat**, run this alongside the critic:
+```
+/speckit-review-attack US1
+```
+Show `attack.md`: hostile inputs (oversized files, unicode, secrets in output) as failing tests.
 
-- In the PR's commit history and review timeline, show the audit trail: G2 → G3 → G4 → G5.
+**CI gate, before the fix.** In the terminal:
+```bash
+bash scripts/check-gates.sh origin/main
+```
+It fails and lists the open BLOCKER/MAJOR findings.
+> "Right now this PR can't merge. CI reads the findings file."
+
+**Rulings: the human moment.** Back in a chat:
+```
+/speckit-review-rule US1
+```
+Copilot merges duplicates and asks about anything ambiguous, with a recommendation each time
+(for example *"Should unknown fields in a verification file be rejected or ignored?"*). **Let the
+PO or Tech Lead answer live.** Show the answers recorded under `## Rulings`.
+> "AI proposes, we decide. The fixer has to follow these rulings."
+
+**Fixer.** In a **new chat**, with a standard coding model:
+```
+/speckit-review-fix US1
+```
+Show the finding statuses changing to `FIXED`, the earlier red tests now **green**, and
+`fix-report.md`.
+
+**CI gate, after the fix.** Commit, then run:
+```bash
+bash scripts/check-gates.sh origin/main
+```
+It passes now.
+
+**Final audit (show from the dry run).** `/speckit-review-audit` writes `review/audit.md`: each
+requirement marked MET / PARTIAL / MISSING / MANUAL, with its test or file:line as evidence, plus
+`manual-checklist.md`.
+
+**G5:** push and show CI (`ai-dlc-gates` + `dotnet-build-test`) going green, with the findings
+and audit in the PR. A reviewer approves.
+
+**If the review chat is slow:** switch to the dry-run branch and walk through its `review/`
+folder. Don't wait on it live.
+
+## 7. Traceability and wrap-up (5 min)
+
+- In the PR's commit history and review timeline, show the audit trail: G2 → G3 → G4 → review findings and rulings → G5.
 - Trace one line: **brief → the "replay" requirement (FR-0xx) → task T0xx → its test → code**.
 - Close the loop: "This tool becomes the last step of our own lifecycle. Every future story ends
   with a verification file, and gate G6 replays it against the environment."
@@ -160,4 +221,7 @@ test. Then run `/speckit-review-fix US1` and show the statuses change to FIXED.
 | "What if the AI is wrong?" | That's why there are gates. Fix the spec or plan and regenerate; don't patch code by hand. |
 | "Does this work on existing code?" | Yes. Run `/speckit-specify` for a change on an existing codebase; `/speckit-converge` compares code against the spec. Worth a follow-up POC on a real repo. |
 | "Is our code/data safe?" | It uses Copilot under our existing GitHub agreement. Spec Kit itself is a local CLI plus prompt files, and it doesn't call any external service. |
+| "Doesn't AI review its own code badly?" | The critic runs in a **new chat** without the builder's reasoning, and must **prove** each defect with a failing test. A person makes the rulings and still reviews the PR. |
+| "Won't the review loop slow us down?" | It runs per user story and is capped at 2 rounds. The adversary only runs for critical code. It replaces review comments and QA defects that would otherwise come later. |
+| "What if the reviewer is wrong?" | The fixer can mark a finding `DISPUTED` with evidence, and the developer rules. CI only blocks unresolved BLOCKER/MAJOR findings. |
 | "Bug fixes too?" | A lighter path: see AI-DLC.md §5. Spec Kit also has an optional `bug` extension. |
