@@ -16,6 +16,23 @@
         "speckit-git-commit"
       ],
       "installed_at": "2026-11-12T10:06:17.278954+00:00"
+    },
+    "review": {
+      "version": "0.1.0",
+      "source": "local",
+      "manifest_hash": "sha256:c2ef6bb6309fec75c03d8e589c9ae7ec22effe9174f99a92c9d337e0a9fa32c8",
+      "enabled": true,
+      "priority": 10,
+      "registered_commands": {},
+      "registered_skills": [
+        "speckit-review-pack",
+        "speckit-review-code",
+        "speckit-review-attack",
+        "speckit-review-rule",
+        "speckit-review-fix",
+        "speckit-review-audit"
+      ],
+      "installed_at": "2026-11-12T14:42:38.632600+00:00"
     }
   }
 }

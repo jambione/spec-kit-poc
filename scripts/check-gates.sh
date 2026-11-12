@@ -10,6 +10,7 @@
 #   - Branches named bugfix/* or hotfix/* → pass (bug-fix path: issue + regression test).
 #   - Otherwise the branch must be NNN-<slug> and specs/NNN-<slug>/ must contain
 #     spec.md, plan.md and tasks.md, with no unresolved [NEEDS CLARIFICATION] markers.
+#   - If the review extension is installed: no unresolved BLOCKER/MAJOR review findings.
 set -euo pipefail
 
 base="${1:?usage: check-gates.sh <base-ref> [branch-name]}"
@@ -53,6 +54,12 @@ if [[ -f "$dir/tasks.md" ]]; then
   open=$(grep -cE '^\s*- \[ \]' "$dir/tasks.md" || true)
   done_=$(grep -cE '^\s*- \[[xX]\]' "$dir/tasks.md" || true)
   echo "ℹ️  tasks.md: $done_ done, $open open"
+fi
+
+# Review, Attack & Fix extension: unresolved BLOCKER/MAJOR findings block the PR (gate G5).
+review_state=".specify/extensions/review/scripts/python/review_state.py"
+if [[ -f "$review_state" && -d "$dir" ]]; then
+  python3 "$review_state" --feature-dir "$dir" check || fail=1
 fi
 
 if [[ $fail -ne 0 ]]; then

@@ -11,6 +11,7 @@
 - [ ] **G3 Plan:** `plan.md` Constitution Check passes; approved by Tech Lead / Architect
 - [ ] **G4 Tasks:** `tasks.md` covers every FR; `/speckit-analyze` has no CRITICAL findings
 - [ ] **G5 Code:** CI green; each FR has at least one test; reviewed by someone other than the author
+- [ ] **G5 Review loop:** `/speckit-review-code` run per user story (attack for critical code); no open BLOCKER/MAJOR; `review/audit.md` attached
 - [ ] **G5 Verification file:** recorded and included under `verifications/` *(applies once the tool from feature 001 exists)*
 
 ## Constitution check (reviewer)

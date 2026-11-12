@@ -1,0 +1,1 @@
+../../../.specify/extensions/review/.specify-dev/extension-skills/speckit-review-attack/SKILL.md

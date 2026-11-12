@@ -130,6 +130,15 @@ If gaps remain:
 /speckit-converge
 ```
 
+**Review loop (optional, 3 min, or show it from the dry-run branch).** In a **new chat**:
+```
+/speckit-review-code US1
+```
+Show `specs/001-…/review/US1/round-1/findings.md`: numbered findings, each proven by a failing
+test. Then run `/speckit-review-fix US1` and show the statuses change to FIXED.
+> "Copilot wrote the code. A second Copilot chat, told to find defects, had to prove each one with
+> a failing test. CI won't let this PR merge while a serious finding is open."
+
 **G5:** push and show CI (`ai-dlc-gates` + `dotnet-build-test`) going green; a reviewer approves.
 
 ## 6. Traceability and wrap-up (5 min)

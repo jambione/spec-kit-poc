@@ -1,5 +1,6 @@
 installed:
 - git
+- review
 settings:
   auto_execute_hooks: true
 hooks:
@@ -56,6 +57,14 @@ hooks:
     priority: 10
     prompt: Commit outstanding changes before implementation?
     description: Auto-commit before implementation
+    condition: null
+  - extension: review
+    command: speckit.review.pack
+    enabled: true
+    optional: true
+    priority: 10
+    prompt: Write a context pack for the scope you are about to implement?
+    description: Context pack before implementation
     condition: null
   before_checklist:
   - extension: git
@@ -137,6 +146,14 @@ hooks:
     priority: 10
     prompt: Commit implementation changes?
     description: Auto-commit after implementation
+    condition: null
+  - extension: review
+    command: speckit.review.code
+    enabled: true
+    optional: true
+    priority: 10
+    prompt: Run the critic review on what was just implemented?
+    description: Code review after implementation
     condition: null
   after_checklist:
   - extension: git

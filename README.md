@@ -74,7 +74,8 @@ docs/
   reference-example/            # hand-written spec, plan, research, contracts, tasks for the POC
   presentation/TEAM-SESSION.md # team presentation: agenda + speaker script
   presentation/*.pptx          # slide deck for the team session (with speaker notes)
-scripts/check-gates.sh         # CI: src/ changes require spec + plan + tasks
+extensions/review/             # source of the Review, Attack & Fix extension
+scripts/check-gates.sh         # CI: src/ changes need spec + plan + tasks; no open BLOCKER/MAJOR findings
 scripts/check-context.sh       # G1: PROJECT-CONTEXT.md has no unanswered TODOs
 specs/                         # created by Spec Kit, one folder per feature
 src/  tests/                   # created during /speckit-implement
@@ -90,11 +91,41 @@ src/  tests/                   # created during /speckit-implement
   for `main` in GitHub: require 1+ approving review and require the `ai-dlc-gates` and
   `dotnet-build-test` checks to pass.
 
+## AI agents
+
+**GitHub Copilot (agent mode) is the default and the focus of this POC.** Spec Kit itself is
+agent-neutral, so other agents are an option:
+
+```bash
+specify integration list
+```
+
+This shows the supported agents and what's installed. In Spec Kit 1.4.0, Copilot isn't marked
+"multi-install safe", so to try another agent, switch on a separate branch rather than
+installing it alongside Copilot:
+
+```bash
+specify integration switch <key>
+```
+
+The constitution, templates, specs and the review extension stay the same. Only the agent's
+command files change.
+
+## Quality loop: Review, Attack & Fix extension
+
+`extensions/review/` (installed in `.specify/extensions/review/`) adds the step Spec Kit lacks
+after `/speckit-implement`: `/speckit-review-code` (critic), `/speckit-review-attack`
+(adversary), `/speckit-review-rule` (developer rulings), `/speckit-review-fix` (fixer) and
+`/speckit-review-audit` (final check against the spec). Defects must be proven with failing
+tests, and CI blocks the PR while any BLOCKER/MAJOR finding is unresolved. See
+[`extensions/review/README.md`](extensions/review/README.md).
+
 ## Tooling versions (pinned for the POC)
 
 | Tool | Version |
 |---|---|
 | specify-cli (Spec Kit) | 1.4.0 (`--integration copilot --script py`) |
 | Spec Kit git extension | 1.0.4 |
+| Review, Attack & Fix extension (this repo) | 0.1.0 |
 | .NET | 8.0 LTS |
 | Playwright | `Microsoft.Playwright` for .NET (version chosen in the plan) |

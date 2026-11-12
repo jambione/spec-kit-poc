@@ -15,9 +15,9 @@ that turns each step into a repeatable Copilot command with a standard output fi
 ## 2. Phases at a glance
 
 ```
- ┌──────────────── INCEPTION ────────────────┐ ┌──────────── CONSTRUCTION ────────────┐ ┌─ OPERATIONS ─┐
- Intent ─► Specify ─► Clarify ─► [G2 Spec]  ─► Plan ─► [G3] ─► Tasks ─► Analyze ─► [G4] ─► Implement ─► [G5 PR] ─► [G6 Release]
-  [G1]     (AI)       (AI+team)   approve       (AI)    approve  (AI)     (AI)    approve    (AI+dev)    review     deploy
+ ┌──────────────── INCEPTION ────────────────┐ ┌───────────────────── CONSTRUCTION ─────────────────────┐ ┌─ OPERATIONS ─┐
+ Intent ─► Specify ─► Clarify ─► [G2 Spec]  ─► Plan ─► [G3] ─► Tasks ─► Analyze ─► [G4] ─► Implement ─► Review+Fix ─► [G5 PR] ─► [G6 Release]
+  [G1]     (AI)       (AI+team)   approve       (AI)    approve  (AI)     (AI)    approve    (AI+dev)    (AI+dev)      review     deploy
 ```
 
 | Phase | Purpose | Spec Kit command(s) | Output (in `specs/<NNN-feature>/`) | Gate |
@@ -28,7 +28,8 @@ that turns each step into a repeatable Copilot command with a standard output fi
 | **1. Inception: Clarify** | Remove ambiguity | `/speckit-clarify` (optional), `/speckit-checklist` (optional) | `spec.md` (Clarifications section), `checklists/*.md` | **G2** PO + Tech Lead |
 | **2. Construction: Design** | How will we build it? | `/speckit-plan <tech direction>` | `plan.md`, `research.md`, `data-model.md`, `contracts/`, `quickstart.md` | **G3** Architect / TL |
 | **2. Construction: Break down** | What are the steps? | `/speckit-tasks`, then `/speckit-analyze` | `tasks.md`, analyze report | **G4** TL |
-| **2. Construction: Build** | Write tests, then code | `/speckit-implement` (then `/speckit-converge` if gaps remain) | Source + tests, tasks checked off | **G5** PR review |
+| **2. Construction: Build** | Write tests, then code | `/speckit-implement` (then `/speckit-converge` if gaps remain) | Source + tests, tasks checked off | |
+| **2. Construction: Review & fix** | Prove defects, then fix them | `/speckit-review-code` (+ `/speckit-review-attack` for critical code), `/speckit-review-rule`, `/speckit-review-fix`, then `/speckit-review-audit` | `review/**/findings.md`, failing-then-passing tests, `review/audit.md` | **G5** PR review (CI blocks open BLOCKER/MAJOR) |
 | **3. Operations** | Ship and run | (not covered by Spec Kit: CI/CD pipeline) | Build, deployment, monitoring | **G6** Release owner |
 
 ## 3. Roles
@@ -51,8 +52,10 @@ Each gate is a **pull request** (or a PR review checkpoint) on the feature branc
    in GitHub. Comments become edits (by hand or by re-running Copilot). Approval = G2.
 3. **Plan + Tasks (G3/G4):** push `plan.md` and `tasks.md` to the same PR and request the TL's
    review. You can combine G3 and G4 into one review for small features.
-4. **Code (G5):** Copilot implements, the developer reviews locally, pushes, CI runs, and a
-   reviewer approves.
+4. **Code (G5):** Copilot implements, then the review loop runs per user story: the critic
+   (and, for critical code, the adversary) prove defects with failing tests, the developer rules on
+   anything ambiguous, and the fixer fixes. Max 2 rounds, then escalate. The final audit checks
+   the whole feature against the spec. Push; CI runs; a reviewer approves.
 5. **Release (G6):** merge to `main`, then the normal pipeline deploys.
 
 The **PR template** (`.github/pull_request_template.md`) has a checkbox per gate, and the

@@ -1,0 +1,52 @@
+# Review, Attack & Fix: configuration
+# Installed to .specify/extensions/review/review-config.yml
+
+# Full gate: run once at the end of build, review-fix and audit. Must exit 0 to pass.
+gate:
+  command: "dotnet build && dotnet test"
+  # How to run only the tests you are changing while iterating ({filter} is replaced).
+  targeted: "dotnet test --filter \"FullyQualifiedName~{filter}\""
+  # Suites prone to flakiness: run this many times after a fix (0 = off).
+  flaky_runs: 0
+
+# Where reviewers/adversaries create their single new test file each round.
+tests:
+  directory: "tests"
+  # {scope}, {round} and {role} are replaced. Role is "review" or "attack".
+  file_pattern: "{scope}_{role}_r{round}_Tests.cs"
+
+# Paths that make a scope "critical": /speckit-review-code recommends /speckit-review-attack
+# when the diff touches any of these (auth, parsing untrusted input, secrets, public APIs, migrations).
+critical_paths:
+  - "**/Auth/**"
+  - "**/Security/**"
+  - "**/Validation/**"
+  - "**/Placeholders/**"
+  - "**/Recording/**"
+  - "**/Migrations/**"
+
+loop:
+  # Review → fix rounds per scope before escalating to a person.
+  max_rounds: 2
+  # Base ref for diffs when a scope has no previous round ("auto" = merge-base with origin/main or main).
+  base_ref: "auto"
+
+limits:
+  context_pack_lines: 150
+  report_words: 200
+
+# CI (scripts/check-gates.sh): fail the PR if any BLOCKER/MAJOR finding is unresolved.
+ci:
+  block_on_open_findings: true
+  # Also fail when src/ changed but no review round exists for the feature.
+  require_review: false
+
+# Recommended Copilot model per role. Copilot can't switch models per command automatically:
+# pick the model in the chat model picker before running each command.
+models:
+  pack: "fast / low-cost model"
+  code: "strongest reasoning model"
+  attack: "strongest reasoning model"
+  rule: "strongest reasoning model"
+  fix: "standard coding model"
+  audit: "strongest reasoning model"
