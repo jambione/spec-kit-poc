@@ -9,6 +9,7 @@
 | Audience | Developers, QA, Product Owner, Tech Lead |
 | Format | Talk + live demo in VS Code with GitHub Copilot |
 | Goal | The team understands the lifecycle, has seen it work on our project, and agrees to run the POC |
+| Slides | [`AI-DLC-Spec-Kit-Team-Session.pptx`](AI-DLC-Spec-Kit-Team-Session.pptx): 20 slides with speaker notes, following this script |
 
 ---
 

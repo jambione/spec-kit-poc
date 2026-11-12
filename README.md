@@ -19,7 +19,7 @@ code. See the [brief](docs/demo/feature-brief.md).
 | **Fill in your application, environment and JSON format (do this first)** | [`docs/poc/PROJECT-CONTEXT.md`](docs/poc/PROJECT-CONTEXT.md), then `bash scripts/check-context.sh` |
 | Understand the lifecycle (phases, gates, roles) | [`docs/ai-dlc/AI-DLC.md`](docs/ai-dlc/AI-DLC.md) |
 | See the POC plan, timeline and success metrics | [`docs/poc/POC-PLAN.md`](docs/poc/POC-PLAN.md) |
-| **Present AI-DLC + Spec Kit to the team** (agenda, speaker script, Q&A) | [`docs/presentation/TEAM-SESSION.md`](docs/presentation/TEAM-SESSION.md) |
+| **Present AI-DLC + Spec Kit to the team** (agenda, speaker script, Q&A) | [`docs/presentation/TEAM-SESSION.md`](docs/presentation/TEAM-SESSION.md) + slides: [`AI-DLC-Spec-Kit-Team-Session.pptx`](docs/presentation/AI-DLC-Spec-Kit-Team-Session.pptx) |
 | Run the demo | [`docs/demo/DEMO-SCRIPT.md`](docs/demo/DEMO-SCRIPT.md) |
 | See the POC project brief (Story Verification Recordings) | [`docs/demo/feature-brief.md`](docs/demo/feature-brief.md) |
 | See the engineering rules Copilot must follow | [`.specify/memory/constitution.md`](.specify/memory/constitution.md) |
@@ -71,6 +71,7 @@ docs/
   poc/PROJECT-CONTEXT.md       # YOUR app, environment, JSON format (fill in first)
   demo/                        # demo script + sample feature brief
   presentation/TEAM-SESSION.md # team presentation: agenda + speaker script
+  presentation/*.pptx          # slide deck for the team session (with speaker notes)
 scripts/check-gates.sh         # CI: src/ changes require spec + plan + tasks
 scripts/check-context.sh       # G1: PROJECT-CONTEXT.md has no unanswered TODOs
 specs/                         # created by Spec Kit, one folder per feature
