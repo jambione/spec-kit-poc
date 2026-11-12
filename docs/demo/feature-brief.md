@@ -2,6 +2,9 @@
 
 > This is the **intent** for the POC project. It is deliberately short and leaves questions
 > open, so `/speckit-clarify` has real ambiguity to find and resolve.
+>
+> **Project specifics** (target repository, environment under test, JSON format requirements)
+> live in [`docs/poc/PROJECT-CONTEXT.md`](../poc/PROJECT-CONTEXT.md). Fill that in first.
 
 ## Problem
 When a developer finishes a user story or a defect fix, "it works" is checked by hand, on their
@@ -16,9 +19,10 @@ are found late, by QA or by users.
   that has the developer's code.
 
 ## What we want (v1)
-1. **Record.** As the last step of their work, a developer records what they expect to happen:
-   they walk through the scenario in a browser, and mark the outcomes they expect (for example
-   "this message appears", "this value is shown", "I land on this page").
+1. **Record.** As the last step of their work, a developer records what they expect to happen
+   using the **Playwright recorder**: they walk through the scenario in a browser and mark the
+   outcomes they expect with the recorder's assertion tools (for example "this message appears",
+   "this value is shown", "I land on this page").
 2. **Save as a file.** The recording is saved as a readable **JSON verification file** that is
    linked to the user story or defect ID and stored with the code change, so it is reviewed in
    the same pull request.
@@ -39,13 +43,9 @@ dashboard, replacing the existing QA regression suite.
 - A reviewer can tell from the JSON alone what was verified.
 
 ## Open questions (intentionally left for Clarify)
-- How does the runner sign in to the environment, and where do credentials live (never in the
-  JSON file)?
-- How is test data handled, when a recording depends on data that only exists on the
-  developer's machine?
-- Can one story have several verification files? Can a file be edited by hand after recording?
-- Which environments can a file run against (dev, test, staging), and how is the base URL chosen?
+Anything marked `OPEN:` in [`PROJECT-CONTEXT.md`](../poc/PROJECT-CONTEXT.md), plus:
+- How does Playwright recorder output become the JSON verification file (conversion step, or a
+  custom recorder output target)?
 - What happens to verification files after the story is released: do they join a regression set
   or get archived?
-- Which browsers must be supported?
 - How are flaky steps (timing, animations) handled: retries, waits, or failure?

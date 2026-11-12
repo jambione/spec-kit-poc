@@ -17,9 +17,9 @@ standard and leave a clear audit trail**. Finish with a go / no-go / adapt recom
 
 | Week | Activities | Exit criteria |
 |---|---|---|
-| **0 (1–2 days)** | Confirm the "AI DLC" definition with the sponsor. Check Copilot licences and agent mode access. Install prerequisites. | Sponsor agrees with the lifecycle doc in principle |
-| **1** | Tailor the constitution to real team standards. Dry-run Inception and planning (specify → clarify → plan → tasks). Settle the recording approach in `research.md`. | Approved spec, plan and tasks on a dry-run branch |
-| **2** | Build with the real roles (PO, TL, Dev, QA): first the JSON format and replay runner (the lowest-risk slice), then recording. Collect metrics. | Merged PR with approvals G2–G5 visible; a verification file replays against the sample app |
+| **0 (1–2 days)** | Confirm the "AI DLC" definition with the sponsor. Check Copilot licences and agent mode access. Install prerequisites. Fill in [`PROJECT-CONTEXT.md`](PROJECT-CONTEXT.md) (target repo, environment, JSON format). | Sponsor agrees with the lifecycle doc in principle; `scripts/check-context.sh` passes (G1) |
+| **1** | Tailor the constitution to real team standards. Dry-run Inception and planning (specify → clarify → plan → tasks). Settle in `research.md` how Playwright recorder output becomes the JSON file. | Approved spec, plan and tasks on a dry-run branch |
+| **2** | Build with the real roles (PO, TL, Dev, QA): first the JSON format and replay runner (the lowest-risk slice), then recording. Collect metrics. | Merged PR with approvals G2–G5 visible; a verification file recorded against the target application replays against the environment |
 | **3** | Rehearse the demo, run the demo, hold a retro, write the recommendation. | Demo delivered; recommendation doc |
 
 ## Success criteria / metrics
@@ -45,7 +45,7 @@ Record these during the dry run and the real run (copy the table into the PR or 
 | Specs drift from code after v1 | Use `/speckit-converge`; decide in the retro whether specs are living documents |
 | Copilot goes off track during the live demo | Pre-recorded build step + fallback dry-run branch |
 | Security / compliance questions about AI | Brief security early; no real data in prompts |
-| Recording is harder than replay (capturing expected outcomes, stable locators) | Build replay first with hand-written files; decide the recording approach in `research.md`; a thin recorder is enough for the demo |
+| Turning Playwright recorder output into the team's JSON format (recorder emits code, not your JSON) | Build replay first with hand-written files; decide the conversion approach in `research.md`; support only the step and assertion types listed in the context file |
 | Sign-in and test data differ per environment | Raised as Clarify questions; credentials only via environment variables or secret store |
 | "AI DLC" means something different to the sponsor | Week 0 alignment; lifecycle doc is easy to rename and rearrange |
 
@@ -58,4 +58,4 @@ Record these during the dry run and the real run (copy the table into the PR or 
 ## Open decisions for the sponsor
 - [ ] Is there an existing company SDLC this must align with?
 - [ ] Who plays PO / TL / QA for the real run?
-- [ ] Which application and environment should the tool be proven against after the sample app?
+- [ ] Who fills in and approves `PROJECT-CONTEXT.md` (target app, environment, JSON format)?

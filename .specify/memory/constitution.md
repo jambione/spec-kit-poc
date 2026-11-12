@@ -1,7 +1,8 @@
 <!--
 Sync Impact Report
-- Version: 1.0.0 → 1.1.0 (retargeted from a Web API sample to the Story Verification
-  Recordings tool: CLI + Playwright standards; added principle VIII)
+- Version: 1.1.0 → 1.2.0 (Playwright recorder is the capture tool; target application,
+  environment and JSON format details move to docs/poc/PROJECT-CONTEXT.md)
+- Previous: 1.0.0 → 1.1.0 (retargeted to the Story Verification Recordings tool; added VIII)
 - Principles added: VIII. Modified: III, IV, V, VI
 - Sections added: Technology Standards, AI-DLC Workflow & Quality Gates, Governance
 - Templates reviewed: plan-template.md (Constitution Check reads these principles) ✅
@@ -31,7 +32,7 @@ Any unresolved `[NEEDS CLARIFICATION]` marker blocks its gate.
 Tests are written from the spec's acceptance scenarios before the implementation, and must fail
 first (red, then green, then refactor). Every functional requirement (FR-xxx) is covered by at
 least one automated test. Core logic (file model, validation, step execution) needs unit tests;
-every CLI command needs an integration test that runs it against the local sample app.
+every CLI command needs an integration test that runs it against a local sample page.
 Tests never depend on an external or shared environment.
 
 ### IV. Simple, Layered .NET Design
@@ -64,9 +65,10 @@ Commits and PRs reference the feature folder (for example `specs/001-story-verif
 trail, so don't squash away gate approvals.
 
 ### VIII. Verification Files Are a Contract
-The JSON verification file is a public, versioned format. It has a published JSON Schema and a
-`schemaVersion` field, links to its story or defect ID, and stays readable by a person in a pull
-request. Steps use resilient locators (role, label, test ID) before CSS or XPath. A file holds no
+The JSON verification file is a public, versioned format. Its exact shape comes from the format
+requirements in `docs/poc/PROJECT-CONTEXT.md` and is designed in the plan, but it always has a
+published JSON Schema and a version marker, links to its story or defect ID, and stays readable
+by a person in a pull request. Steps use resilient locators (role, label, test ID) before CSS or XPath. A file holds no
 environment-specific values: base URL and credentials are supplied at run time. Breaking changes
 to the format need a new schema version and a migration note.
 
@@ -75,10 +77,12 @@ to the format need a new schema version and a migration note.
 | Area | Standard |
 |---|---|
 | Runtime | .NET 8 LTS (move to the current LTS when the team does), C# with nullable reference types enabled |
-| Browser automation | `Microsoft.Playwright` for .NET; Chromium by default, other browsers as the spec requires |
+| Recording | Playwright recorder (`codegen`), including its assertion tools |
+| Browser automation | Playwright; runner language per `PROJECT-CONTEXT.md` (default `Microsoft.Playwright` for .NET). Browsers as the spec requires |
+| Project specifics | Target application, environment, pipeline and JSON requirements live in `docs/poc/PROJECT-CONTEXT.md`; specs and plans must not contradict it |
 | CLI | A `dotnet tool` using `System.CommandLine` (the plan may justify another parser) |
 | File format | JSON via `System.Text.Json`; JSON Schema kept in the repo under `schemas/` |
-| Tests | xUnit, FluentAssertions (or plain asserts); a small local sample web app under `tests/SampleApp` as the replay target |
+| Tests | xUnit, FluentAssertions (or plain asserts); automated tests replay against a small local sample page, never a shared environment |
 | Style | `dotnet format` clean; warnings treated as errors in `Release` |
 | Layout | `src/<Project>/`, `tests/<Project>.UnitTests/`, `tests/<Project>.IntegrationTests/`, `verifications/` for verification files, one `.sln` at the repo root |
 
@@ -86,7 +90,7 @@ to the format need a new schema version and a migration note.
 
 | Gate | Artifact | Approver(s) | Blocking criteria |
 |---|---|---|---|
-| G1: Intent | Feature brief / issue | Product Owner | Problem, users and success measure are stated |
+| G1: Intent | Feature brief / issue + `PROJECT-CONTEXT.md` | Product Owner + Tech Lead | Problem, users and success measure stated; `scripts/check-context.sh` passes |
 | G2: Spec | `spec.md` | Product Owner + Tech Lead | No `[NEEDS CLARIFICATION]` left; requirements are testable |
 | G3: Plan | `plan.md`, `data-model.md`, `contracts/` | Tech Lead / Architect | Constitution Check passes; any complexity is justified |
 | G4: Tasks | `tasks.md` (+ `/speckit-analyze` report) | Tech Lead | Every FR maps to a task; no CRITICAL analyze findings |
@@ -103,4 +107,4 @@ to the format need a new schema version and a migration note.
 - Reviewers check compliance using the PR template checklist.
 - Runtime guidance for Copilot lives in `.github/copilot-instructions.md`.
 
-**Version**: 1.1.0 | **Ratified**: 2026-11-12 | **Last Amended**: 2026-11-12
+**Version**: 1.2.0 | **Ratified**: 2026-11-12 | **Last Amended**: 2026-11-12

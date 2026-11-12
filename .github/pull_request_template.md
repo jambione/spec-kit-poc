@@ -6,7 +6,7 @@
 
 ## AI-DLC gates
 <!-- Tick a gate only once the named approver has approved it in this PR (or a linked one). -->
-- [ ] **G1 Intent:** feature brief / issue linked: <!-- #issue or link -->
+- [ ] **G1 Intent:** feature brief / issue linked: <!-- #issue or link --> and `scripts/check-context.sh` passes
 - [ ] **G2 Spec:** `spec.md` approved by PO + Tech Lead; no `[NEEDS CLARIFICATION]` left
 - [ ] **G3 Plan:** `plan.md` Constitution Check passes; approved by Tech Lead / Architect
 - [ ] **G4 Tasks:** `tasks.md` covers every FR; `/speckit-analyze` has no CRITICAL findings

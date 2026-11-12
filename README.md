@@ -5,7 +5,7 @@ A proof of concept showing how a team can run an **AI-driven development lifecyc
 a **.NET 8** codebase.
 
 **The project being built:** *Story Verification Recordings*. When a developer finishes a user
-story or defect, they record what they expect to happen. The recording is saved as a JSON
+story or defect, they record what they expect to happen with the **Playwright recorder**. The recording is saved as a JSON
 verification file, and a Playwright runner replays it against the environment that has their
 code. See the [brief](docs/demo/feature-brief.md).
 
@@ -16,6 +16,7 @@ code. See the [brief](docs/demo/feature-brief.md).
 
 | If you want to… | Read |
 |---|---|
+| **Fill in your application, environment and JSON format (do this first)** | [`docs/poc/PROJECT-CONTEXT.md`](docs/poc/PROJECT-CONTEXT.md), then `bash scripts/check-context.sh` |
 | Understand the lifecycle (phases, gates, roles) | [`docs/ai-dlc/AI-DLC.md`](docs/ai-dlc/AI-DLC.md) |
 | See the POC plan, timeline and success metrics | [`docs/poc/POC-PLAN.md`](docs/poc/POC-PLAN.md) |
 | Run the demo | [`docs/demo/DEMO-SCRIPT.md`](docs/demo/DEMO-SCRIPT.md) |
@@ -66,8 +67,10 @@ specify check
 docs/
   ai-dlc/AI-DLC.md             # lifecycle definition
   poc/POC-PLAN.md              # plan, metrics, risks
+  poc/PROJECT-CONTEXT.md       # YOUR app, environment, JSON format (fill in first)
   demo/                        # demo script + sample feature brief
 scripts/check-gates.sh         # CI: src/ changes require spec + plan + tasks
+scripts/check-context.sh       # G1: PROJECT-CONTEXT.md has no unanswered TODOs
 specs/                         # created by Spec Kit, one folder per feature
 src/  tests/                   # created during /speckit-implement
 ```

@@ -23,7 +23,7 @@ that turns each step into a repeatable Copilot command with a standard output fi
 | Phase | Purpose | Spec Kit command(s) | Output (in `specs/<NNN-feature>/`) | Gate |
 |---|---|---|---|---|
 | **0. Foundation** (once per project) | Agree on the rules | `/speckit-constitution` | `.specify/memory/constitution.md` | Tech Lead approves |
-| **1. Inception: Intent** | Why are we doing this? | (none: a person writes the brief or issue) | Feature brief / GitHub issue | **G1** PO |
+| **1. Inception: Intent** | Why are we doing this, and for which app and environment? | (none: people write the brief and fill in `docs/poc/PROJECT-CONTEXT.md`; check with `scripts/check-context.sh`) | Feature brief / GitHub issue + project context | **G1** PO + TL |
 | **1. Inception: Specify** | What should it do? (no tech) | `/speckit-specify <brief>` | `spec.md` | |
 | **1. Inception: Clarify** | Remove ambiguity | `/speckit-clarify` (optional), `/speckit-checklist` (optional) | `spec.md` (Clarifications section), `checklists/*.md` | **G2** PO + Tech Lead |
 | **2. Construction: Design** | How will we build it? | `/speckit-plan <tech direction>` | `plan.md`, `research.md`, `data-model.md`, `contracts/`, `quickstart.md` | **G3** Architect / TL |

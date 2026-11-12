@@ -46,9 +46,15 @@ Open `.specify/memory/constitution.md`.
 
 **G1.** Show [`feature-brief.md`](feature-brief.md): "This is what a PO hands us."
 
+**Context.** Show [`PROJECT-CONTEXT.md`](../poc/PROJECT-CONTEXT.md) filled in for your
+application and environment, and run the readiness check:
+```bash
+bash scripts/check-context.sh
+```
+
 **Specify.** In Copilot Chat:
 ```
-/speckit-specify Build Story Verification Recordings. When a developer finishes a user story or defect fix, they record in a browser what they expect to happen, marking the expected outcomes (text appears, value shown, page reached). The recording is saved as a readable JSON verification file linked to the story or defect ID and stored with the code change so it is reviewed in the same pull request. An automated runner replays the JSON file against a chosen environment that has the developer's code and checks every expected outcome. Each run reports pass/fail per step with evidence (expected vs found, screenshot on failure). The runner can be used in a pipeline so work is not done until its verification passes. Out of scope: mobile apps, API-only checks, performance testing, pixel comparison, a hosted dashboard. Success: record a typical story in under 5 minutes; a recorded file replays against a deployed environment with no manual edits; a reviewer understands what was verified from the JSON alone.
+/speckit-specify Build Story Verification Recordings as described in docs/demo/feature-brief.md, for the target application, environment and JSON format requirements in docs/poc/PROJECT-CONTEXT.md. When a developer finishes a user story or defect fix, they record what they expect to happen with the Playwright recorder, marking expected outcomes with its assertion tools. The recording becomes a readable JSON verification file linked to the story or defect ID and stored with the code change so it is reviewed in the same pull request. An automated runner replays the file against the environment that has the developer's code and checks every expected outcome, reporting pass/fail per step with evidence (expected vs found, screenshot on failure), and can gate a pipeline. Treat every OPEN item in PROJECT-CONTEXT.md as a [NEEDS CLARIFICATION] marker; do not guess them.
 ```
 Point out:
 - a new branch `001-…` and `specs/001-…/spec.md` were created
@@ -60,8 +66,8 @@ Point out:
 ```
 /speckit-clarify
 ```
-Let the PO in the room answer Copilot's questions (how does the runner sign in? where do
-credentials live? what about test data? which environments and browsers?). Show the answers
+Let the PO in the room answer Copilot's questions (the OPEN items from the context file, plus
+anything else it found). Show the answers
 written into the spec's **Clarifications** section.
 
 **G2: spec approval.** Commit and push, then open a **draft PR**:
@@ -74,11 +80,11 @@ Show the PR template's gate checklist. The PO and TL approve, which completes G2
 
 **Plan.** Now (and only now) we give technical direction:
 ```
-/speckit-plan .NET 8 solution using Microsoft.Playwright for .NET. Three projects: src/Verification.Core (the JSON verification file model, a versioned JSON Schema, validation, and the step/assertion execution engine), src/Verification.Cli (a dotnet tool with commands: record, run, validate), and tests (xUnit unit tests for Core, plus integration tests that run the CLI against a small local sample web app in tests/SampleApp). Research and decide how to capture recordings (for example building on Playwright's codegen/recorder versus a custom recorder) and record the decision in research.md. Prefer resilient locators (role, label, test id) over CSS/XPath. The base URL and credentials come from environment variables or a config file that is never committed; secrets must never be written into verification files. Output: console summary, JUnit XML for pipelines, screenshots and Playwright trace on failure, non-zero exit code on any failed step. Include a task to update CI to install Playwright browsers.
+/speckit-plan Use the stack, repository location, pipeline and runner language from docs/poc/PROJECT-CONTEXT.md (default: .NET 8 with Microsoft.Playwright for .NET, a dotnet tool CLI with record, run and validate commands, xUnit tests). Recording uses the Playwright recorder (codegen): research in research.md how its output, including recorded assertions, becomes the JSON verification file, and pick the simplest reliable approach. Design the JSON verification file from the format requirements in the spec as a versioned JSON Schema in contracts/. Base URL and credentials come from environment variables or the pipeline secret store, never from the file. Output a console summary, JUnit XML for pipelines, and screenshots plus a Playwright trace on failure, with a non-zero exit code on any failed step. Automated tests run against a small local sample page, never the shared environment. Include a task to install Playwright browsers in CI.
 ```
 Show:
 - `plan.md`, especially the **Constitution Check** table: "Copilot audited its own design against our rules."
-- `research.md` (the recording approach decision)
+- `research.md` (how Playwright recorder output becomes the JSON file)
 - `data-model.md` and `contracts/` (the **JSON verification file schema**: this is the contract)
 - `quickstart.md`
 
@@ -110,8 +116,9 @@ While it runs, narrate: tests are written first (Principle III), and tasks are t
 ```bash
 dotnet build && dotnet test
 ```
-**The payoff moment:** record a verification against the sample app, show the JSON file, then
-replay it. Break the sample app on purpose and replay again to show a failed step with its
+**The payoff moment:** record a verification with the Playwright recorder against your
+application, show the JSON file, then replay it against the environment. Replay it against a
+build where the behaviour is broken (or edit an expected value) to show a failed step with its
 screenshot. (Use the exact commands from the generated `quickstart.md`.)
 
 If gaps remain:
